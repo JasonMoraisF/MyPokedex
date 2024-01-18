@@ -1,22 +1,14 @@
 import React from 'react';
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  theme,
-} from '@chakra-ui/react';
+import { ChakraProvider, theme } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
 import { PokemonCard } from './components/PokemonCard';
+import { Home } from './pages/Home';
 
 function App() {
   return (
-    <ChakraProvider>
-      <PokemonCard />
+    <ChakraProvider theme={theme}>
       <ColorModeSwitcher />
+      <Home />
     </ChakraProvider>
   );
 }

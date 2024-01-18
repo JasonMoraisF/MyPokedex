@@ -1,37 +1,45 @@
 import React, { useEffect, useState } from 'react';
+import { WiStars } from 'react-icons/wi';
 import { pokeapi } from '../axiosConfig';
 import {
-  Card,
-  CardBody,
   Image,
   Stack,
   Heading,
   Text,
-  Wrap,
-  WrapItem,
+  Box,
   Flex,
   AlertIcon,
   Alert,
   AlertTitle,
   AlertDescription,
+  useColorModeValue,
+  IconButton,
+  Center,
+  Spacer,
 } from '@chakra-ui/react';
 
-export const PokemonCard = () => {
-  //useState sendo usado para CRIAR estados para armazenar as informacoes do Pokemon. No momento sendo vazio.
-  const [pokeName, setPokeName] = useState('');
-  const [pokeId, setPokeId] = useState(0);
-  const [pokeType, setPokeType] = useState('');
-  const [pokeSprite, setPokeSprite] = useState('');
+//useState sendo usado para CRIAR estados para armazenar as informacoes do Pokemon. No momento sendo vazio.
+export const PokemonCard = ({ name }) => {
+  const [isShiny, setIsShiny] = useState(false);
+  const [pokemon, setPokemon] = useState({
+    id: '',
+    name: '',
+    types: [{}],
+    sprites: {},
+  });
+  // Esta funcao ira apenas inverter o valor do isShiny
+  const shinySwitcher = () => {
+    setIsShiny(!isShiny);
+  };
 
+  //Utilizando o useEffect pra fazer a requisicao quando a pagina for renderizada
   useEffect(() => {
-    //Utilizando o useEffect pra fazer a requisicao quando o componente for montado.
     pokeapi
-      .get('pokemon/arceus')
+      .get(`pokemon/${name}`)
       .then(response => {
-        setPokeName(response.data.name);
-        setPokeId(response.data.id);
-        setPokeType(response.data.types[0].type.name);
-        setPokeSprite(response.data.sprites.front_default);
+        setPokemon(response.data);
+
+        //Mapear os tipos e retornar um array de strings
       })
       .catch(err => {
         return (
@@ -46,25 +54,57 @@ export const PokemonCard = () => {
     // usando o [] para garantir que o useEffect execute apenas uma vez, ao montar o componente.
   }, []);
   return (
-    <Flex justify="center" align="center" h="100vh">
-      <Wrap>
-        <WrapItem>
-          <Card maxW="200px">
-            <CardBody>
-              <Text fontSize={10}>Id: {pokeId}</Text>
-              <Image src={pokeSprite} alt="Sprite of ${pokeName}" />
-              <Stack mt="1" spacing="3">
-                <Heading size="md">
-                  {pokeName.charAt(0).toUpperCase() + pokeName.slice(1)}
-                </Heading>
-                <Text fontSize={15}>
-                  Type= {pokeType.charAt(0).toUpperCase() + pokeType.slice(1)}
-                </Text>
-              </Stack>
-            </CardBody>
-          </Card>
-        </WrapItem>
-      </Wrap>
-    </Flex>
+    <Box
+      width="150px"
+      rounded={'sm'}
+      my={5}
+      mx={[0, 5]}
+      border={'1px'}
+      borderColor="black"
+      boxShadow={useColorModeValue('6px 6px 2px black', '6px 6px 2px gray')}
+    >
+      <Flex>
+        <Box>
+          <Text fontSize={10} padding="5px">
+            Id: {pokemon.id}
+          </Text>
+        </Box>
+        <Spacer />
+        <IconButton
+          icon={<WiStars />}
+          aria-label="Shiny Switcher"
+          colorScheme="red"
+          onClick={shinySwitcher}
+          size="xs"
+          margin="5px"
+        />
+      </Flex>
+
+      <Center>
+        <Image
+          src={
+            isShiny
+              ? pokemon.sprites.front_shiny
+              : pokemon.sprites.front_default
+          }
+          alt={`Sprite of ${pokemon.name}`}
+        />
+      </Center>
+      <Flex>
+        <Heading size="md" padding="5px">
+          {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+        </Heading>
+      </Flex>
+      <Stack mt="1" spacing="3">
+        <Text fontSize={15} padding="5px">
+          {' '}
+          Type=
+          {pokemon.types.map(type => {
+            const typeName = type.type?.name;
+            return `${typeName}  `;
+          })}
+        </Text>
+      </Stack>
+    </Box>
   );
 };
