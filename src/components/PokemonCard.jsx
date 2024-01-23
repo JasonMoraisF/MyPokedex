@@ -21,6 +21,7 @@ import {
 //useState sendo usado para CRIAR estados para armazenar as informacoes do Pokemon. No momento sendo vazio.
 export const PokemonCard = ({ name }) => {
   const [isShiny, setIsShiny] = useState(false);
+  // Criando um objeto pokemon que possui 4 valores, 1 deles sendo um array.
   const [pokemon, setPokemon] = useState({
     id: '',
     name: '',
